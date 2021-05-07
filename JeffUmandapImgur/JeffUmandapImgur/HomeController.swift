@@ -103,10 +103,15 @@ class HomeController: UIViewController, UIScrollViewDelegate {
     }
     
     func detailViewShow(data: String?){
-        imageView.image = nil
-        initPDF()
-        initDocument(name: data)
-        viewDidLayoutSubviews()
+        if data != "" {
+            imageView.image = nil
+            initPDF()
+            initDocument(name: data)
+            viewDidLayoutSubviews()
+        } else {
+            Common.quickAlert(self, mtitle: "Error", message: "File not found", onDone: nil)
+        }
+        
     }
     
     func detailViewShow(data: Image?){
@@ -217,15 +222,19 @@ extension HomeController : UITableViewDataSource, UITableViewDelegate {
             }
             
         } else {
-            
-            let data = pdf[indexPath.row]
-            if data.filename.contains(".pdf") {
-                detailViewShow(data: data.filename)
-            } else {
-                if let image = model.getImage(at: indexPath.row - 2) {
-                    detailViewShow(data: image)
+            if (indexPath.row < pdf.count) {
+                let data = pdf[indexPath.row]
+                if data.filename.contains(".pdf") {
+                    detailViewShow(data: data.filename)
+                } else {
+                    if let image = model.getImage(at: indexPath.row - 2) {
+                        detailViewShow(data: image)
+                    }
                 }
+            } else {
+                detailViewShow(data: "")
             }
+            
         }
         
     }
