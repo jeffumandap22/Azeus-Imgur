@@ -183,27 +183,39 @@ extension HomeController: XMLParserDelegate {
 extension HomeController : UITableViewDataSource, UITableViewDelegate {
    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pdf.count
+        return pdf.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "NameCell") as! NameCell
-        let data = pdf[indexPath.row]
-        cell.nameLabel.text = "\(data.filename)"
-        cell.descLabel.text = data.description
+        
+        if (indexPath.row < pdf.count) {
+            let data = pdf[indexPath.row]
+            cell.nameLabel.text = "\(data.filename)"
+            cell.descLabel.text = data.description
+        } else {
+            cell.nameLabel.text = "Dummy Row"
+            cell.nameLabel.textColor = .lightGray
+            cell.descLabel.text  = ""
+        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if detailView.isHidden {
-            let data = pdf[indexPath.row]
-            if data.filename.contains(".pdf") {
-                screenNavigationDelegate?.loadPDF(pdfName: data.filename)
-            } else {
-                if let image = model.getImage(at: indexPath.row - 2) {
-                    screenNavigationDelegate?.loadImage(image: image)
+            if (indexPath.row < pdf.count) {
+                let data = pdf[indexPath.row]
+                if data.filename.contains(".pdf") {
+                    screenNavigationDelegate?.loadPDF(pdfName: data.filename)
+                } else {
+                    if let image = model.getImage(at: indexPath.row - 2) {
+                        screenNavigationDelegate?.loadImage(image: image)
+                    }
                 }
+            }  else {
+                screenNavigationDelegate?.loadPDF(pdfName: "Dummy")
             }
+            
         } else {
             
             let data = pdf[indexPath.row]
